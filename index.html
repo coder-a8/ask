@@ -4991,6 +4991,14 @@ body::before {
       }
     ];
 
+    // أول عالم في كل مسار يبدأ مفتوحاً، ويتقدم كل مسار بشكل مستقل.
+    const TRACK_STARTER_IDS = TRACKS
+      .map((track) => {
+        const first = CAMPAIGN_LEVELS.find((level) => level.track === track.id);
+        return first ? first.id : null;
+      })
+      .filter((id) => id !== null);
+
     const QUIZ_META = {
       math: {
         shortName: 'الحساب الذهني',
@@ -5360,7 +5368,7 @@ body::before {
     function createDefaultGameState() {
       const levels = {};
       for (let level = 1; level <= CAMPAIGN_STAGES; level += 1) {
-        levels[String(level)] = { unlocked: level === 1, stars: 0 };
+        levels[String(level)] = { unlocked: TRACK_STARTER_IDS.includes(level), stars: 0 };
       }
       return {
         coins: 0,
@@ -5425,6 +5433,9 @@ body::before {
       for (let level = 1; level <= highestUnlocked; level += 1) {
         fresh.levels[String(level)].unlocked = true;
       }
+      TRACK_STARTER_IDS.forEach((id) => {
+        fresh.levels[String(id)].unlocked = true;
+      });
 
       fresh.totalStars = countAllStars(fresh);
       return fresh;
@@ -5637,8 +5648,11 @@ body::before {
 
       let unlockedNext = false;
       if (stageId < CAMPAIGN_STAGES) {
+        const currentLevel = getLevelConfig(stageId);
+        const nextConfig = getLevelConfig(stageId + 1);
         const nextLevel = gameState.levels[String(stageId + 1)];
-        if (nextLevel && !nextLevel.unlocked) {
+        const sameTrack = currentLevel && nextConfig && currentLevel.track === nextConfig.track;
+        if (sameTrack && nextLevel && !nextLevel.unlocked) {
           nextLevel.unlocked = true;
           unlockedNext = true;
         }
