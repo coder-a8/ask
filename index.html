@@ -3219,6 +3219,120 @@ body::before {
   color: var(--text-strong);
 }
 
+/* =========================================================================
+   Footer — legal links + legal/information modals
+   ========================================================================= */
+.legal-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.legal-link,
+.legal-link:visited {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #34d399;
+  font: inherit;
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1.8;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.legal-link:hover,
+.legal-link:focus-visible {
+  color: #6ee7b7;
+  text-decoration: none;
+}
+
+.legal-sep {
+  display: inline;
+  color: var(--muted-2);
+  font-size: 0.7rem;
+  line-height: 1.8;
+}
+
+.legal-modal .modal-backdrop {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.legal-modal .modal-panel {
+  display: flex;
+  flex-direction: column;
+  width: min(100%, 520px);
+  max-height: 80vh;
+  max-height: 80dvh;
+  padding: 20px;
+  border: 1px solid #243a32;
+  border-bottom: 1px solid #243a32;
+  border-radius: 15px;
+  background: #16211d;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.62);
+}
+
+.legal-modal .modal-title {
+  flex: 0 0 auto;
+  margin-bottom: 12px;
+  color: #34d399;
+}
+
+.legal-content {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: 80vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-inline-end: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: #243a32 transparent;
+}
+
+.legal-content h3 {
+  margin: 0 0 10px;
+  color: var(--text-strong);
+  font-size: 1rem;
+  font-weight: 900;
+  line-height: 1.6;
+}
+
+.legal-content p {
+  margin: 0 0 10px;
+}
+
+.legal-content ul {
+  margin: 0 0 10px;
+  padding-inline-start: 20px;
+}
+
+.legal-content li {
+  margin-bottom: 6px;
+}
+
+.legal-content p,
+.legal-content li {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.9;
+}
+
+.legal-content strong {
+  color: var(--text-strong);
+  font-weight: 900;
+}
+
+.legal-close {
+  width: 100%;
+  flex: 0 0 auto;
+  margin-top: 14px;
+}
+
 .toast {
   border-color: rgba(52, 211, 153, 0.38);
   border-bottom-color: var(--green-deep);
@@ -4446,6 +4560,13 @@ body::before {
       <footer class="home-footer">
         <span>تحدَّ نفسك، وتعلَّم من كل محاولة.</span>
         <span>تُحفظ نتائجك على جهازك فقط.</span>
+        <div class="legal-links">
+          <button class="legal-link" type="button" data-legal="about">عن الموقع</button>
+          <span class="legal-sep" aria-hidden="true">|</span>
+          <button class="legal-link" type="button" data-legal="privacy">سياسة الخصوصية</button>
+          <span class="legal-sep" aria-hidden="true">|</span>
+          <button class="legal-link" type="button" data-legal="terms">شروط الاستخدام</button>
+        </div>
       </footer>
     </section>
 
@@ -4725,6 +4846,16 @@ body::before {
         <button class="btn btn-primary" id="hearts-retry" type="button" disabled>انتظر...</button>
         <button class="btn btn-secondary" id="hearts-map" type="button">العودة إلى الخريطة</button>
       </div>
+    </div>
+  </div>
+
+  <!-- الصفحات القانونية والمعلوماتية -->
+  <div class="modal legal-modal" id="legal-modal" hidden>
+    <div class="modal-backdrop" id="legal-backdrop" aria-hidden="true"></div>
+    <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="legal-modal-title" tabindex="-1">
+      <h2 class="modal-title" id="legal-modal-title"></h2>
+      <div class="legal-content" id="legal-content"></div>
+      <button class="btn btn-primary legal-close" id="legal-close" type="button">إغلاق</button>
     </div>
   </div>
 
@@ -5150,6 +5281,46 @@ body::before {
       note: document.getElementById('hearts-note')
     };
 
+    const legalElements = {
+      modal: document.getElementById('legal-modal'),
+      backdrop: document.getElementById('legal-backdrop'),
+      close: document.getElementById('legal-close'),
+      title: document.getElementById('legal-modal-title'),
+      content: document.getElementById('legal-content')
+    };
+
+    const legalTitles = {
+      about: 'عن الموقع',
+      privacy: 'سياسة الخصوصية',
+      terms: 'شروط الاستخدام'
+    };
+
+    const legalTexts = {
+      about: `<h3>عن موقع "تحدي الذهن"</h3>
+<p>مرحباً بك في "تحدي الذهن"، منصتك العربية المجانية لاختبار وتطوير سرعة البديهة والذاكرة.</p>
+<p>تم تصميم هذا الموقع ليكون أداة تعليمية وترفيهية ممتعة للجميع. يوفر الموقع اختبارين تفاعليين:</p>
+<ul>
+  <li><strong>اختبار الحساب الذهني:</strong> لقياس سرعة ودقة العمليات الحسابية.</li>
+  <li><strong>اختبار المفردات الإنجليزية:</strong> لقياس وتقوية الحصيلة اللغوية للمستخدم العربي.</li>
+</ul>
+<p>هدفنا هو توفير بيئة آمنة، نظيفة، وخالية من المشتتات، متوافقة مع القيم العربية والإسلامية. نؤمن بأن العقل السليم يحتاج إلى تدريب يومي مستمر.</p>
+<p>الموقع مجاني 100%، لا يتطلب تسجيلاً، ويحفظ تقدمك داخل متصفحك فقط.</p>`,
+      privacy: `<h3>سياسة الخصوصية</h3>
+<p>نحن في "تحدي الذهن" نحترم خصوصيتك ونلتزم بحمايتها. توضح هذه السياسة كيف يتم التعامل مع بياناتك عند استخدام الموقع.</p>
+<p><strong>1. المعلومات التي نجمعها:</strong><br>موقعنا هو لعبة تعمل بالكامل داخل متصفحك. نحن لا نجمع أي معلومات شخصية (مثل الاسم أو البريد الإلكتروني)، ولا نطلب منك التسجيل.</p>
+<p><strong>2. حفظ التقدم (LocalStorage):</strong><br>يستخدم الموقع خاصية تخزين محلية في متصفحك لحفظ تقدمك (مثل النقاط والمراحل المفتوحة). هذه البيانات تبقى على جهازك فقط ولا يتم إرسالها إلى أي خادم. يمكنك مسحها في أي وقت بمسح بيانات المتصفح.</p>
+<p><strong>3. الإعلانات والشبكات الخارجية:</strong><br>نحن نتعاون مع شبكات إعلانية حلال لعرض إعلانات تموّل استمرار الموقع مجاناً. هذه الشبكات قد تستخدم ملفات تعريف الارتباط (Cookies) لعرض إعلانات تناسب اهتماماتك. نحن نحرص على اختيار شبكات تلتزم بسياسة صارمة تمنع الإعلانات المخالفة للشريعة الإسلامية والمحتوى غير اللائق.</p>
+<p><strong>4. التغييرات في السياسة:</strong><br>قد نقوم بتحديث سياسة الخصوصية من وقت لآخر. ننصحك بمراجعة هذه الصفحة دورياً.</p>`,
+      terms: `<h3>شروط الاستخدام</h3>
+<p>باستخدامك لموقع "تحدي الذهن"، فإنك توافق على ما يلي:</p>
+<ul>
+  <li>الموقع مخصص للاستخدام الشخصي غير التجاري (لا يُسمح بنسخ محتوى الموقع أو إعادة نشره دون إذن).</li>
+  <li>الموقع يُقدم "كما هو" للترفيه والتعليم. لا نتحمل مسؤولية أي قرارات تُتخذ بناءً على نتائج الاختبارات.</li>
+  <li>يُمنع استخدام أي برامج آلية (Bots) للتلاعب بنتائج الاختبارات أو إحداث ضغط على الموقع.</li>
+</ul>`
+    };
+
+    let lastLegalTrigger = null;
     let selectedStage = 1;
     let stagePanelOpen = false;
     let pendingQuiz = null;
@@ -6890,7 +7061,8 @@ body::before {
     function isAnyModalOpen() {
       return isModalVisible(sharedElements.modal)
         || isModalVisible(rewardElements.modal)
-        || isModalVisible(heartsElements.modal);
+        || isModalVisible(heartsElements.modal)
+        || isModalVisible(legalElements.modal);
     }
 
     function syncModalOpenState() {
@@ -7447,6 +7619,33 @@ body::before {
       lastShareTrigger = null;
     }
 
+    function openModal(type) {
+      if (!legalElements.modal) return;
+      const key = Object.prototype.hasOwnProperty.call(legalTexts, type) ? type : 'about';
+      lastLegalTrigger = document.activeElement;
+      legalElements.title.textContent = legalTitles[key] || legalTitles.about;
+      legalElements.content.innerHTML = legalTexts[key];
+      legalElements.content.scrollTop = 0;
+      legalElements.modal.hidden = false;
+      syncModalOpenState();
+      window.setTimeout(() => {
+        if (!legalElements.modal.hidden && legalElements.close) {
+          legalElements.close.focus({ preventScroll: true });
+        }
+      }, 40);
+    }
+
+    function closeLegalModal(restoreFocus = true) {
+      if (!legalElements.modal || legalElements.modal.hidden) return;
+      legalElements.modal.hidden = true;
+      legalElements.content.innerHTML = '';
+      syncModalOpenState();
+      if (restoreFocus && lastLegalTrigger && document.contains(lastLegalTrigger)) {
+        lastLegalTrigger.focus({ preventScroll: true });
+      }
+      lastLegalTrigger = null;
+    }
+
     function downloadCurrentShare() {
       if (!currentShare) {
         showToast('لا توجد صورة جاهزة للتنزيل.');
@@ -7999,6 +8198,8 @@ body::before {
             closeRewardModal();
           } else if (isModalVisible(heartsElements.modal)) {
             closeHeartsModal();
+          } else if (isModalVisible(legalElements.modal)) {
+            closeLegalModal();
           } else if (isModalVisible(sharedElements.modal)) {
             closeShareModal();
           }
@@ -8151,6 +8352,16 @@ body::before {
       }
       if (heartsElements.backdrop) {
         heartsElements.backdrop.addEventListener('click', () => closeHeartsModal());
+      }
+
+      document.querySelectorAll('.legal-link').forEach((link) => {
+        link.addEventListener('click', () => openModal(link.dataset.legal));
+      });
+      if (legalElements.close) {
+        legalElements.close.addEventListener('click', () => closeLegalModal());
+      }
+      if (legalElements.backdrop) {
+        legalElements.backdrop.addEventListener('click', () => closeLegalModal());
       }
 
       document.addEventListener('keydown', handleQuizKeyboard);
