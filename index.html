@@ -540,9 +540,13 @@ a:focus-visible {
 
 .title-accent {
   display: inline;
-  background: linear-gradient(transparent 66%, rgba(255, 200, 0, 0.58) 66%);
+  background: none;
   color: var(--green-dark);
   padding-inline: 0.04em;
+  text-decoration-line: underline;
+  text-decoration-color: rgba(255, 200, 0, 0.58);
+  text-decoration-thickness: 0.1em;
+  text-underline-offset: 0.18em;
 }
 
 .home-intro p {
@@ -2829,8 +2833,11 @@ body::before {
 }
 
 .title-accent {
-  background: linear-gradient(transparent 68%, rgba(16, 185, 129, 0.26) 68%);
+  background: none;
   color: var(--green-light);
+  text-decoration-color: rgba(16, 185, 129, 0.55);
+  text-decoration-thickness: 0.1em;
+  text-underline-offset: 0.18em;
 }
 
 .section-label {
