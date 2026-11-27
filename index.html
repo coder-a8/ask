@@ -623,6 +623,13 @@ a:focus-visible {
   --card-wash: var(--sky-wash);
 }
 
+.quiz-card.card-daily {
+  --card-accent: var(--gold);
+  --card-accent-dark: var(--gold-dark);
+  --card-accent-rgb: 255, 200, 0;
+  --card-wash: var(--gold-pale);
+}
+
 .quiz-card::before {
   content: "";
   position: absolute;
@@ -4557,6 +4564,9 @@ body::before {
           </span>
         </div>
         <div class="home-stats">
+          <span class="stat-chip stat-chip-streak" id="daily-streak-chip" title="سلسلة أيام تحدي اليوم">
+            🔥 <bdi id="daily-streak-value">0</bdi>
+          </span>
           <button class="sound-toggle" type="button" data-sound-toggle aria-pressed="true"
             aria-label="المؤثرات الصوتية" title="إيقاف المؤثرات الصوتية">
             <svg class="sound-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -4630,6 +4640,24 @@ body::before {
         </span>
         <span class="path-entry-arrow" aria-hidden="true">←</span>
       </button>
+
+      <div class="section-row">
+        <span class="section-label">تحدي اليوم</span>
+        <span class="section-hint" id="daily-countdown">يتجدد خلال 00:00:00</span>
+      </div>
+
+      <div class="quiz-list">
+        <button class="quiz-card card-daily" type="button" data-quiz="daily"
+          aria-label="ابدأ تحدي اليوم: 10 أسئلة، نفس الأسئلة لكل اللاعبين في اليوم الواحد">
+          <span class="card-icon" aria-hidden="true"><span class="icon-glyph">◷</span></span>
+          <span class="card-copy">
+            <span class="card-title">تحدي اليوم</span>
+            <span class="card-desc"><bdi>10</bdi> أسئلة · <bdi>12</bdi> ثانية · نفس الأسئلة للجميع</span>
+            <span class="card-best">أفضل نتيجة: <bdi id="best-daily-home">—</bdi></span>
+          </span>
+          <span class="card-chevron" aria-hidden="true">←</span>
+        </button>
+      </div>
 
       <div class="section-row">
         <span class="section-label">تدريب حر</span>
@@ -4992,6 +5020,9 @@ body::before {
     const LIFE_REGEN_MS = 15 * 60 * 1000; // قلب كل 15 دقيقة
     const REVIVE_MS = 60 * 1000; // قلب مجاني بعد دقيقة عند نفاد القلوب
     const REWARD_COINS = 20;
+    const DAILY_QUESTION_COUNT = 10;
+    const DEFAULT_DAILY_TIME = 12;
+    const DAILY_STREAK_KEY = 'dailyStreak_v1';
     const MAX_COMBO_MULTIPLIER = 4;
     const COMBO_COIN_CAP = 60;
     const MAX_TOTAL_STARS = CAMPAIGN_STAGES * 3;
@@ -5133,6 +5164,15 @@ body::before {
         colorStrong: '#0ea5e9',
         storageKey: 'bestScore_english',
         fileName: 'english-vocab-result.png'
+      },
+      daily: {
+        shortName: 'تحدي اليوم',
+        fullName: 'تحدي اليوم',
+        icon: '◷',
+        color: '#ffc800',
+        colorStrong: '#d9a900',
+        storageKey: 'bestScore_daily',
+        fileName: 'daily-challenge-result.png'
       },
       campaign: {
         shortName: 'رحلة التحدي',
@@ -5467,16 +5507,19 @@ body::before {
     /* =========================
        دوال مساعدة عامة
        ========================= */
+    // يمكن تبديل مولّد الأرقام مؤقتاً ببذرة ثابتة لتوليد أسئلة تحدي اليوم.
+    let activeRandom = Math.random;
+
     function randInt(min, max) {
       const low = Math.ceil(min);
       const high = Math.floor(max);
-      return Math.floor(Math.random() * (high - low + 1)) + low;
+      return Math.floor(activeRandom() * (high - low + 1)) + low;
     }
 
     function shuffle(array) {
       const result = array.slice();
       for (let i = result.length - 1; i > 0; i -= 1) {
-        const j = Math.floor(Math.random() * (i + 1));
+        const j = Math.floor(activeRandom() * (i + 1));
         [result[i], result[j]] = [result[j], result[i]];
       }
       return result;
@@ -5484,6 +5527,53 @@ body::before {
 
     function pickRandom(array, count) {
       return shuffle(array).slice(0, count);
+    }
+
+    /* =========================
+       تحدي اليوم — بذرة يومية وأسئلة متطابقة للجميع
+       ========================= */
+    function getDailyKey(date = new Date()) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    function previousDailyKey(key) {
+      const parts = key.split('-').map(Number);
+      const date = new Date(parts[0], parts[1] - 1, parts[2]);
+      date.setDate(date.getDate() - 1);
+      return getDailyKey(date);
+    }
+
+    function hashString(text) {
+      let hash = 2166136261;
+      for (let index = 0; index < text.length; index += 1) {
+        hash ^= text.charCodeAt(index);
+        hash = Math.imul(hash, 16777619);
+      }
+      return hash >>> 0;
+    }
+
+    function makeSeededRandom(seed) {
+      let value = seed >>> 0;
+      return () => {
+        value = (value + 0x6D2B79F5) >>> 0;
+        let t = value;
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+
+    function withSeed(seed, callback) {
+      const previous = activeRandom;
+      activeRandom = makeSeededRandom(seed);
+      try {
+        return callback();
+      } finally {
+        activeRandom = previous;
+      }
     }
 
     /* =========================
@@ -5881,13 +5971,80 @@ body::before {
       return false;
     }
 
+    let activeDailyKey = '';
+
+    function readDailyStreak() {
+      try {
+        const raw = window.localStorage.getItem(DAILY_STREAK_KEY);
+        if (!raw) return { current: 0, best: 0, lastKey: '' };
+        const parsed = JSON.parse(raw);
+        return {
+          current: Number.isInteger(parsed.current) && parsed.current >= 0 ? parsed.current : 0,
+          best: Number.isInteger(parsed.best) && parsed.best >= 0 ? parsed.best : 0,
+          lastKey: typeof parsed.lastKey === 'string' ? parsed.lastKey : ''
+        };
+      } catch (error) {
+        return { current: 0, best: 0, lastKey: '' };
+      }
+    }
+
+    function recordDailyPlay(key) {
+      const streak = readDailyStreak();
+      if (streak.lastKey === key) return { ...streak, isNew: false };
+      streak.current = streak.lastKey === previousDailyKey(key) ? streak.current + 1 : 1;
+      streak.best = Math.max(streak.best, streak.current);
+      streak.lastKey = key;
+      try {
+        window.localStorage.setItem(DAILY_STREAK_KEY, JSON.stringify(streak));
+      } catch (error) {
+        // التخزين قد يكون معطلاً؛ لا نوقف اللعب بسببه.
+      }
+      return { ...streak, isNew: true };
+    }
+
+    function renderDailyStreak() {
+      const chip = document.getElementById('daily-streak-chip');
+      const valueEl = document.getElementById('daily-streak-value');
+      const streak = readDailyStreak();
+      if (valueEl) valueEl.textContent = String(streak.current);
+      if (chip) {
+        chip.title = `سلسلة تحدي اليوم: ${streak.current} يوم · أفضل سلسلة: ${streak.best} يوم`;
+      }
+    }
+
+    function formatDailyCountdown(ms) {
+      const totalSeconds = Math.max(0, Math.floor(ms / 1000));
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+      return [hours, minutes, seconds].map((part) => String(part).padStart(2, '0')).join(':');
+    }
+
+    function renderDailyCountdown() {
+      const el = document.getElementById('daily-countdown');
+      if (!el) return;
+      const key = getDailyKey();
+      if (activeDailyKey && activeDailyKey !== key) {
+        renderHomeBestScores();
+        showToast('تحدي اليوم الجديد متاح الآن!');
+      }
+      activeDailyKey = key;
+      const now = new Date();
+      const nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+      el.textContent = `يتجدد خلال ${formatDailyCountdown(nextMidnight.getTime() - now.getTime())}`;
+    }
+
     function renderHomeBestScores() {
       const mathBest = getBestScore('math');
       const englishBest = getBestScore('english');
+      const dailyBest = getBestScore('daily');
       const mathEl = document.getElementById('best-math-home');
       const englishEl = document.getElementById('best-english-home');
+      const dailyEl = document.getElementById('best-daily-home');
       if (mathEl) mathEl.textContent = mathBest === null ? '—' : `${mathBest}/20`;
       if (englishEl) englishEl.textContent = englishBest === null ? '—' : `${englishBest}/20`;
+      if (dailyEl) dailyEl.textContent = dailyBest === null ? '—' : `${dailyBest}/${DAILY_QUESTION_COUNT}`;
+      renderDailyStreak();
     }
 
     /* =========================
@@ -6412,6 +6569,22 @@ body::before {
       return generateEnglishQuestionsForLevels(levels, TOTAL_QUESTIONS);
     }
 
+    // خمس مسائل حسابية وخمس كلمات، مولّدة ببذرة التاريخ نفسه لكل اللاعبين.
+    function generateDailyQuestions() {
+      const seed = hashString(`daily:${getDailyKey()}`);
+      return withSeed(seed, () => {
+        const mathQuestions = generateMathQuestionsForLevel(
+          { levels: [1, 2, 3], ops: ['add', 'sub', 'mul', 'div'] },
+          Math.ceil(DAILY_QUESTION_COUNT / 2)
+        );
+        const englishQuestions = generateEnglishQuestionsForLevels(
+          [1, 2, 3],
+          Math.floor(DAILY_QUESTION_COUNT / 2)
+        );
+        return shuffle([...mathQuestions, ...englishQuestions]);
+      });
+    }
+
     function generateMathQuestionsForLevel(levelConfig, count) {
       const questions = [];
       const seen = new Set();
@@ -6597,12 +6770,18 @@ body::before {
       state.mode = mode;
       state.stage = activeStage;
       state.level = levelConfig;
-      state.questionTime = levelConfig ? levelConfig.time : DEFAULT_QUESTION_TIME;
+      state.questionTime = mode === 'daily'
+        ? DEFAULT_DAILY_TIME
+        : levelConfig
+          ? levelConfig.time
+          : DEFAULT_QUESTION_TIME;
       state.questions = mode === 'campaign'
         ? generateCampaignQuestions(levelConfig)
-        : mode === 'math'
-          ? generateMathQuestions()
-          : generateEnglishQuestions();
+        : mode === 'daily'
+          ? generateDailyQuestions()
+          : mode === 'math'
+            ? generateMathQuestions()
+            : generateEnglishQuestions();
       state.index = 0;
       state.input = '';
       state.correct = 0;
@@ -7157,6 +7336,7 @@ body::before {
         const previousBest = getBestScore(state.mode);
         saveBestScore(state.mode, score);
         isNewRecord = score > 0 && (previousBest === null || score > previousBest);
+        if (state.mode === 'daily') recordDailyPlay(getDailyKey());
       }
 
       setIconGlyph(
@@ -7208,6 +7388,13 @@ body::before {
         resultStageEl.hidden = true;
         resultUnlockEl.hidden = true;
         nextStageBtn.hidden = true;
+        if (state.mode === 'daily') {
+          const streak = readDailyStreak();
+          resultUnlockEl.hidden = false;
+          resultUnlockEl.classList.remove('is-fail');
+          resultUnlockEl.classList.add('is-success');
+          resultUnlockEl.textContent = `تحدي ${getDailyKey()} — سلسلتك ${streak.current} يوم. الأسئلة تتجدد عند منتصف الليل.`;
+        }
       }
 
       const resultHeadEl = document.querySelector('.result-head');
@@ -7742,7 +7929,9 @@ body::before {
       const levelConfig = state.mode === 'campaign' ? getLevelConfig(state.stage) : null;
       const title = levelConfig
         ? `عالم ${getStageLabel(levelConfig)} · ${levelConfig.name}`
-        : meta.fullName;
+        : state.mode === 'daily'
+          ? `تحدي اليوم · ${getDailyKey()}`
+          : meta.fullName;
       const config = {
         title,
         icon: levelConfig ? levelConfig.icon : meta.icon,
@@ -8588,8 +8777,13 @@ body::before {
       });
 
       window.addEventListener('storage', (event) => {
-        if (event.key === 'bestScore_math' || event.key === 'bestScore_english') {
+        if (event.key === 'bestScore_math'
+          || event.key === 'bestScore_english'
+          || event.key === 'bestScore_daily') {
           renderHomeBestScores();
+        }
+        if (event.key === DAILY_STREAK_KEY) {
+          renderDailyStreak();
         }
         if (event.key === GAME_STATE_KEY) {
           try {
@@ -8626,12 +8820,14 @@ body::before {
       renderHomeBestScores();
       renderHomePathEntry();
       renderGameHud();
+      renderDailyCountdown();
       showScreen('home');
 
       window.setInterval(() => {
         refreshLives({ save: true, render: true, notify: true });
         if (isModalVisible(heartsElements.modal)) updateHeartsModal();
       }, 1000);
+      window.setInterval(renderDailyCountdown, 1000);
     }
 
     initApp();
