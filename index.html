@@ -9,7 +9,7 @@
 </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>تحدي العقل | رحلة التحدي الذهني — 20 عالماً</title>
+  <title>تحدي العقل | رحلة التحدي العقلي — 20 عالماً</title>
   <meta name="description" content="تحدي العقل — رحلة تحدٍّ ذهنية من 20 عالماً في مسارين منفصلين: 10 عوالم حساب و10 عوالم إنجليزية، و20 سؤالاً في كل عالم. اجمع النجوم والعملات واحمِ قلوبك عبر خريطة عوالم قابلة للتمرير.">
   <meta name="keywords" content="تحدي العقل, اختبار الحساب الذهني, اختبار مفردات الإنجليزية, اختبار ذكاء أونلاين, اختبار رياضي مجاني, اختبار إنجليزي مجاني, اختبار حساب ذهني, اختبار رياضيات أونلاين, لعبة حساب سريع, تمارين حساب ذهني, اختبار جمع وطرح وضرب وقسمة, تدريب الحساب الذهني, اختبار سرعة الحساب, حساب ذهني للمبتدئين, حساب ذهني للمتقدمين, اختبار رياضيات للجوال, لعبة رياضيات للكبار, اختبر مستواك في الرياضيات, اختبار مفردات إنجليزية, اختبار إنجليزي أونلاين, اختبار مستوى الإنجليزية, لعبة مفردات إنجليزية, اختبر مستواك في الإنجليزية, اختبار ترجمة كلمات إنجليزية, تعلم المفردات الإنجليزية, اختبار إنجليزي للمبتدئين, اختبار إنجليزي سريع, تدريب مفردات إنجليزية, كلمات إنجليزية شائعة مع الترجمة, اختبار ذكاء, اختبار سرعة البديهة, العاب ذهنية, تدريب العقل, العاب تعليمية, اختبارات نفسية سريعة, اختبر نفسك, العاب مجانية بدون تحميل, اختبارات مجانية أونلاين, اختبار حساب ذهني مجاني بدون تسجيل, اختبر مستواك في الرياضيات في 5 دقائق, لعبة حساب سريع للجوال, اختبار مفردات إنجليزية مع الترجمة العربية, كيف أطور الحساب الذهني, أفضل موقع لاختبار الحساب الذهني, اختبار إنجليزي سريع للمبتدئين, تمارين حساب ذهني مع النتائج, اختبر ذكاءك في دقيقتين, لعبة تعليمية عربية مجانية, ما هو الحساب الذهني؟, كيف أتدرب على الحساب الذهني؟, كم تستغرق تعلم المفردات الإنجليزية؟, ما أفضل طريقة لاختبار مستوى الإنجليزية؟, هل يمكن تحسين سرعة الحساب الذهني؟, ما الفرق بين الحساب الذهني والحساب العادي؟, اختبار ذكاء سريع, تحديات ذهنية, تحدي الحساب, كلمات إنجليزية, اختبارات عربية مجانية, لعبة تعليمية, mental math test, mental arithmetic test, english vocabulary test, arabic mental math quiz, free math quiz online">
   <meta name="theme-color" content="#0a0f0d">
@@ -25,7 +25,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
 
   <!-- وسوم المشاركة الاجتماعية -->
-  <meta property="og:title" content="تحدي العقل | رحلة التحدي الذهني — 20 عالماً">
+  <meta property="og:title" content="تحدي العقل | رحلة التحدي العقلي — 20 عالماً">
   <meta property="og:description" content="تحدي العقل — رحلة تحدٍّ ذهنية من 20 عالماً في مسارين منفصلين: 10 عوالم حساب و10 عوالم إنجليزية، و20 سؤالاً في كل عالم. اجمع النجوم والعملات واحمِ قلوبك عبر خريطة عوالم قابلة للتمرير.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://coder-a8.github.io/ask/">
@@ -1191,6 +1191,85 @@ a:focus-visible {
   background: var(--red);
 }
 
+/* =========================================================================
+   Combo / cash-out — the risk/reward strip above the timer
+   ========================================================================= */
+
+.combo-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0 0 10px;
+}
+
+.combo-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 30px;
+  padding: 4px 10px;
+  border: 2px solid var(--gold-pale);
+  border-radius: var(--radius-pill);
+  background: var(--gold-soft);
+  color: var(--gold-dark);
+  font-size: 0.7rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.combo-chip.is-hot {
+  border-color: var(--orange);
+  color: var(--orange-dark);
+  animation: comboPulse 0.9s ease-in-out infinite;
+}
+
+.combo-chip bdi {
+  font-family: var(--font-number);
+  font-weight: 900;
+}
+
+.combo-mult {
+  padding-inline-start: 5px;
+  border-inline-start: 2px solid currentColor;
+  font-family: var(--font-number);
+  font-size: 0.78rem;
+}
+
+.combo-bank {
+  min-height: 30px;
+  padding: 4px 11px;
+  border: 2px solid var(--green);
+  border-bottom: 4px solid var(--green-dark);
+  border-radius: var(--radius-pill);
+  background: var(--green);
+  color: #ffffff;
+  font-size: 0.68rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.combo-bank:disabled {
+  border-color: var(--border);
+  border-bottom-color: var(--border-strong);
+  background: var(--surface-soft);
+  color: var(--muted-2);
+  opacity: 1;
+  cursor: default;
+}
+
+@keyframes comboPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+
+.near-miss {
+  display: inline-block;
+  margin-inline-start: 4px;
+  color: var(--orange-dark);
+  font-weight: 900;
+}
+
 .question-card {
   position: relative;
   width: 100%;
@@ -1220,6 +1299,24 @@ a:focus-visible {
   background: rgba(var(--accent-rgb), 0.09);
   filter: blur(28px);
   pointer-events: none;
+}
+
+.question-card.is-tense {
+  border-color: rgba(255, 75, 75, 0.55);
+  border-bottom-color: var(--red-dark);
+  animation: tensePulse 0.72s ease-in-out infinite;
+}
+
+@keyframes tensePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 75, 75, 0.06); }
+  50% { box-shadow: 0 0 0 7px rgba(255, 75, 75, 0.16); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .combo-chip.is-hot,
+  .question-card.is-tense {
+    animation: none;
+  }
 }
 
 .question-kicker {
@@ -4725,6 +4822,17 @@ body::before {
         <span class="quiz-stage-badge" id="quiz-stage-badge" hidden>عالم الحساب 1</span>
         <span class="timer-text" id="timer-text">المتبقي <bdi id="timer-seconds">15</bdi> ث</span>
       </div>
+      <div class="combo-strip" aria-label="سلسلة الإجابات المتتالية">
+        <span class="combo-chip" id="combo-chip" aria-live="polite">
+          <span aria-hidden="true">🔥</span>
+          <bdi id="combo-streak">0</bdi>
+          <span>متتالية</span>
+          <bdi class="combo-mult" id="combo-mult">×1</bdi>
+        </span>
+        <button class="combo-bank" id="combo-bank" type="button" disabled>
+          احسم <bdi id="combo-bank-value">+0</bdi> عملة
+        </button>
+      </div>
       <div class="timer-track" id="timer-track" role="progressbar" aria-label="الوقت المتبقي للسؤال"
         aria-valuemin="0" aria-valuemax="15" aria-valuenow="15">
         <div class="timer-fill" id="timer-fill"></div>
@@ -4884,6 +4992,8 @@ body::before {
     const LIFE_REGEN_MS = 15 * 60 * 1000; // قلب كل 15 دقيقة
     const REVIVE_MS = 60 * 1000; // قلب مجاني بعد دقيقة عند نفاد القلوب
     const REWARD_COINS = 20;
+    const MAX_COMBO_MULTIPLIER = 4;
+    const COMBO_COIN_CAP = 60;
     const MAX_TOTAL_STARS = CAMPAIGN_STAGES * 3;
     const GAME_STATE_KEY = 'gameState_v2';
     const PREVIOUS_STATE_KEY = 'gameState_v1';
@@ -5203,6 +5313,9 @@ body::before {
       input: '',
       correct: 0,
       wrong: 0,
+      streak: 0,
+      comboMult: 1,
+      comboBonus: 0,
       times: [],
       timerId: null,
       answered: false,
@@ -5233,6 +5346,11 @@ body::before {
     const timerFill = document.getElementById('timer-fill');
     const timerText = document.getElementById('timer-text');
     const timerSeconds = document.getElementById('timer-seconds');
+    const comboChipEl = document.getElementById('combo-chip');
+    const comboStreakEl = document.getElementById('combo-streak');
+    const comboMultEl = document.getElementById('combo-mult');
+    const comboBankBtn = document.getElementById('combo-bank');
+    const comboBankValueEl = document.getElementById('combo-bank-value');
     const sharedElements = {
       modal: document.getElementById('share-modal'),
       backdrop: document.getElementById('share-backdrop'),
@@ -5310,8 +5428,8 @@ body::before {
     };
 
     const legalTexts = {
-      about: `<h3>عن موقع "تحدي الذهن"</h3>
-<p>مرحباً بك في "تحدي الذهن"، منصتك العربية المجانية لاختبار وتطوير سرعة البديهة والذاكرة.</p>
+      about: `<h3>عن موقع "تحدي العقل"</h3>
+<p>مرحباً بك في "تحدي العقل"، منصتك العربية المجانية لاختبار وتطوير سرعة البديهة والذاكرة.</p>
 <p>تم تصميم هذا الموقع ليكون أداة تعليمية وترفيهية ممتعة للجميع. يوفر الموقع اختبارين تفاعليين:</p>
 <ul>
   <li><strong>اختبار الحساب الذهني:</strong> لقياس سرعة ودقة العمليات الحسابية.</li>
@@ -5320,13 +5438,13 @@ body::before {
 <p>هدفنا هو توفير بيئة آمنة، نظيفة، وخالية من المشتتات، متوافقة مع القيم العربية والإسلامية. نؤمن بأن العقل السليم يحتاج إلى تدريب يومي مستمر.</p>
 <p>الموقع مجاني 100%، لا يتطلب تسجيلاً، ويحفظ تقدمك داخل متصفحك فقط.</p>`,
       privacy: `<h3>سياسة الخصوصية</h3>
-<p>نحن في "تحدي الذهن" نحترم خصوصيتك ونلتزم بحمايتها. توضح هذه السياسة كيف يتم التعامل مع بياناتك عند استخدام الموقع.</p>
+<p>نحن في "تحدي العقل" نحترم خصوصيتك ونلتزم بحمايتها. توضح هذه السياسة كيف يتم التعامل مع بياناتك عند استخدام الموقع.</p>
 <p><strong>1. المعلومات التي نجمعها:</strong><br>موقعنا هو لعبة تعمل بالكامل داخل متصفحك. نحن لا نجمع أي معلومات شخصية (مثل الاسم أو البريد الإلكتروني)، ولا نطلب منك التسجيل.</p>
 <p><strong>2. حفظ التقدم (LocalStorage):</strong><br>يستخدم الموقع خاصية تخزين محلية في متصفحك لحفظ تقدمك (مثل النقاط والمراحل المفتوحة). هذه البيانات تبقى على جهازك فقط ولا يتم إرسالها إلى أي خادم. يمكنك مسحها في أي وقت بمسح بيانات المتصفح.</p>
 <p><strong>3. الإعلانات والشبكات الخارجية:</strong><br>نحن نتعاون مع شبكات إعلانية حلال لعرض إعلانات تموّل استمرار الموقع مجاناً. هذه الشبكات قد تستخدم ملفات تعريف الارتباط (Cookies) لعرض إعلانات تناسب اهتماماتك. نحن نحرص على اختيار شبكات تلتزم بسياسة صارمة تمنع الإعلانات المخالفة للشريعة الإسلامية والمحتوى غير اللائق.</p>
 <p><strong>4. التغييرات في السياسة:</strong><br>قد نقوم بتحديث سياسة الخصوصية من وقت لآخر. ننصحك بمراجعة هذه الصفحة دورياً.</p>`,
       terms: `<h3>شروط الاستخدام</h3>
-<p>باستخدامك لموقع "تحدي الذهن"، فإنك توافق على ما يلي:</p>
+<p>باستخدامك لموقع "تحدي العقل"، فإنك توافق على ما يلي:</p>
 <ul>
   <li>الموقع مخصص للاستخدام الشخصي غير التجاري (لا يُسمح بنسخ محتوى الموقع أو إعادة نشره دون إذن).</li>
   <li>الموقع يُقدم "كما هو" للترفيه والتعليم. لا نتحمل مسؤولية أي قرارات تُتخذ بناءً على نتائج الاختبارات.</li>
@@ -6387,6 +6505,34 @@ body::before {
       liveScoreEl.setAttribute('aria-label', `الإجابات الصحيحة: ${state.correct}`);
     }
 
+    // كل إجابتين متتاليتين ترفع المضاعف، والمضاعف يرفع العملات المعلّقة.
+    // الخطأ يُسقط السلسلة، لذا على اللاعب أن يقرر متى يحسم رصيده.
+    function updateComboHud() {
+      const streak = Math.max(0, state.streak);
+      const multiplier = Math.min(MAX_COMBO_MULTIPLIER, 1 + Math.floor(streak / 2));
+      state.comboMult = multiplier;
+      state.comboBonus = Math.min(COMBO_COIN_CAP, streak * multiplier);
+
+      if (comboStreakEl) comboStreakEl.textContent = String(streak);
+      if (comboMultEl) comboMultEl.textContent = `×${multiplier}`;
+      if (comboBankValueEl) comboBankValueEl.textContent = `+${state.comboBonus}`;
+      if (comboChipEl) comboChipEl.classList.toggle('is-hot', streak >= 3);
+      if (comboBankBtn) comboBankBtn.disabled = state.comboBonus <= 0 || !state.mode;
+    }
+
+    function bankCombo() {
+      if (!state.mode || state.comboBonus <= 0) return;
+      const gained = state.comboBonus;
+      gameState.coins += gained;
+      saveGameState();
+      renderGameHud();
+      state.streak = 0;
+      state.comboBonus = 0;
+      updateComboHud();
+      playBankSound();
+      showToast(`حسمت ${gained} عملة! ابدأ سلسلة جديدة`);
+    }
+
     function clearAdvanceTimeout() {
       if (state.advanceTimeoutId !== null) {
         window.clearTimeout(state.advanceTimeoutId);
@@ -6461,6 +6607,9 @@ body::before {
       state.input = '';
       state.correct = 0;
       state.wrong = 0;
+      state.streak = 0;
+      state.comboMult = 1;
+      state.comboBonus = 0;
       state.times = [];
       state.timerId = null;
       state.answered = false;
@@ -6488,6 +6637,7 @@ body::before {
       totalQuestionsEl.textContent = String(state.questions.length);
       currentQuestionEl.textContent = '1';
       updateLiveScore();
+      updateComboHud();
       feedback.textContent = '';
       feedback.className = 'feedback';
 
@@ -6507,6 +6657,9 @@ body::before {
       state.answered = true;
       state.failed = false;
       state.input = '';
+      state.streak = 0;
+      state.comboMult = 1;
+      state.comboBonus = 0;
       state.timerDeadline = 0;
       state.questionStartedAt = 0;
       pendingQuiz = null;
@@ -6515,6 +6668,7 @@ body::before {
       renderHomeBestScores();
       renderHomePathEntry();
       renderGameHud();
+      updateComboHud();
       showScreen('home');
     }
 
@@ -6537,7 +6691,7 @@ body::before {
       cancelSpeech();
       state.answered = false;
       state.input = '';
-      questionCard.classList.remove('is-wrong', 'flash-correct');
+      questionCard.classList.remove('is-wrong', 'flash-correct', 'is-tense');
       questionCard.style.animation = 'none';
       void questionCard.offsetWidth;
       questionCard.style.animation = '';
@@ -6583,6 +6737,7 @@ body::before {
 
       renderInputArea();
       updateLiveScore();
+      updateComboHud();
       startQuestionTimer();
     }
 
@@ -6711,11 +6866,18 @@ body::before {
 
       if (displaySeconds !== lastTimerTick) {
         lastTimerTick = displaySeconds;
-        if (displaySeconds >= 1 && displaySeconds <= 3 && !state.answered) {
-          playTickSound(displaySeconds);
+        if (!state.answered) {
+          if (displaySeconds === 5) playHeartbeatSound();
+          if (displaySeconds >= 1 && displaySeconds <= 3) {
+            playTickSound(displaySeconds);
+          }
         }
       }
 
+      questionCard.classList.toggle(
+        'is-tense',
+        safeSeconds > 0 && (isWarning || isDanger) && !state.answered
+      );
       timerFill.style.width = `${percent}%`;
       timerSeconds.textContent = String(displaySeconds);
       timerTrack.setAttribute('aria-valuenow', String(displaySeconds));
@@ -6820,6 +6982,7 @@ body::before {
 
       const question = state.questions[state.index];
       if (!question) return;
+      const timeLeft = Math.max(0, (state.timerDeadline - performance.now()) / 1000);
 
       if (question.kind !== 'english') {
         const rawValue = String(value !== undefined && value !== null ? value : state.input).trim();
@@ -6828,7 +6991,10 @@ body::before {
           return;
         }
         const numericAnswer = Number(rawValue);
-        finalizeAnswer(numericAnswer === question.answer, { selectedValue: numericAnswer });
+        finalizeAnswer(numericAnswer === question.answer, {
+          selectedValue: numericAnswer,
+          timeLeft
+        });
         return;
       }
 
@@ -6838,7 +7004,8 @@ body::before {
       if (!selectedOption) return;
       finalizeAnswer(selectedOption.correct, {
         selectedIndex: optionIndex,
-        selectedText: selectedOption.text
+        selectedText: selectedOption.text,
+        timeLeft
       });
     }
 
@@ -6847,18 +7014,21 @@ body::before {
       state.answered = true;
       stopQuestionTimer();
       cancelSpeech();
+      questionCard.classList.remove('is-tense');
       recordElapsedTime(false);
 
       const question = state.questions[state.index];
 
       if (isCorrect) {
         state.correct += 1;
+        state.streak += 1;
         questionCard.classList.add('flash-correct');
         feedback.textContent = 'إجابة صحيحة ✓';
         feedback.className = 'feedback success';
         playCorrectSound();
       } else {
         state.wrong += 1;
+        state.streak = 0;
         questionCard.classList.add('is-wrong');
         feedback.className = 'feedback error';
         playWrongSound();
@@ -6870,7 +7040,17 @@ body::before {
         const lifeMarkup = heartOutcome.isOut
           ? '<span class="life-cost is-out">نفدت القلوب</span>'
           : '<span class="life-cost">−1 قلب</span>';
-        feedback.innerHTML = `${correctAnswerMarkup} ${lifeMarkup}`;
+
+        let nearMissMarkup = '';
+        if (Number.isFinite(details.timeLeft) && details.timeLeft > 0 && details.timeLeft < 1.5) {
+          nearMissMarkup = `<span class="near-miss">كنت على بُعد ${details.timeLeft.toFixed(1)} ث!</span>`;
+        } else if (question.kind !== 'english' && Number.isFinite(details.selectedValue)) {
+          const difference = Math.abs(details.selectedValue - question.answer);
+          if (difference > 0 && difference <= 2) {
+            nearMissMarkup = `<span class="near-miss">كنت قريباً — الفرق ${difference} فقط!</span>`;
+          }
+        }
+        feedback.innerHTML = `${correctAnswerMarkup} ${lifeMarkup} ${nearMissMarkup}`;
 
         if (heartOutcome.isOut) {
           state.failed = true;
@@ -6879,6 +7059,7 @@ body::before {
       }
 
       updateLiveScore();
+      updateComboHud();
 
       if (question.kind !== 'english') {
         const mathInput = document.getElementById('math-answer');
@@ -6890,8 +7071,8 @@ body::before {
 
       if (state.failed) return;
 
-      // انتقال سريع بعد الإجابة الصحيحة، ومهلة قصيرة لرؤية التصحيح بعد الخطأ.
-      scheduleNextQuestion(isCorrect ? 240 : 760);
+      // مهلة كافية لرؤية رد الفعل والاستمتاع بلحظة الحسم قبل السؤال التالي.
+      scheduleNextQuestion(isCorrect ? 700 : 1250);
     }
 
     function handleTimeout() {
@@ -6899,11 +7080,14 @@ body::before {
       state.answered = true;
       stopQuestionTimer();
       setTimerVisual(0);
+      questionCard.classList.remove('is-tense');
       cancelSpeech();
       playTimeUpSound();
       recordElapsedTime(true);
       state.wrong += 1;
+      state.streak = 0;
       updateLiveScore();
+      updateComboHud();
 
       const question = state.questions[state.index];
       questionCard.classList.add('is-wrong');
@@ -7964,8 +8148,19 @@ body::before {
 
     function playTickSound(secondsLeft) {
       const frequency = 660 + (3 - secondsLeft) * 110;
-      playTone({ freq: frequency, duration: 0.06, type: 'square', volume: 0.03 });
-      playTone({ freq: frequency / 2, duration: 0.08, type: 'sine', volume: 0.05 });
+      playTone({ freq: frequency, duration: 0.06, type: 'square', volume: 0.045 });
+      playTone({ freq: frequency / 2, duration: 0.08, type: 'sine', volume: 0.07 });
+    }
+
+    // نبضة منخفضة عند 5 ثوانٍ ترفع الإحساس بالخطر قبل العدّ التنازلي.
+    function playHeartbeatSound() {
+      playTone({ freq: 92, endFreq: 58, duration: 0.13, type: 'sine', volume: 0.13 });
+      playTone({ freq: 82, endFreq: 50, duration: 0.17, type: 'sine', volume: 0.1, delay: 0.2 });
+    }
+
+    function playBankSound() {
+      playTone({ freq: 880, duration: 0.09, type: 'triangle', volume: 0.12 });
+      playTone({ freq: 1174.66, duration: 0.16, type: 'triangle', volume: 0.12, delay: 0.08 });
     }
 
     function playCorrectSound() {
@@ -8300,6 +8495,7 @@ body::before {
       }, { passive: true });
 
       document.getElementById('quiz-back').addEventListener('click', goHome);
+      if (comboBankBtn) comboBankBtn.addEventListener('click', bankCombo);
       document.getElementById('retry-quiz').addEventListener('click', restartQuiz);
       document.getElementById('go-home').addEventListener('click', goHome);
       document.getElementById('open-path').addEventListener('click', () => openMap());
