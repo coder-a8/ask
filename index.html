@@ -4315,6 +4315,165 @@ body::before {
   width: 100%;
 }
 
+/* =========================================================================
+   Prize chest modal + badge shelf
+   ========================================================================= */
+.prize-panel {
+  overflow: hidden;
+  border-color: rgba(251, 191, 36, 0.36);
+  border-bottom-color: #2a1c02;
+  background:
+    radial-gradient(circle at 50% -10%, rgba(251, 191, 36, 0.24), transparent 48%),
+    radial-gradient(circle at 50% 90%, rgba(103, 232, 249, 0.08), transparent 55%),
+    var(--surface);
+  text-align: center;
+}
+
+.prize-close {
+  position: absolute;
+  top: 12px;
+  inset-inline-start: 12px;
+  z-index: 3;
+}
+
+.prize-visual {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+}
+
+.prize-chest {
+  display: grid;
+  place-items: center;
+  width: 92px;
+  height: 92px;
+  margin: 4px auto 6px;
+  border: 2px solid rgba(255, 200, 0, 0.5);
+  border-bottom: 7px solid var(--gold-dark);
+  border-radius: 26px;
+  background:
+    radial-gradient(circle at 50% 20%, rgba(255, 200, 0, 0.28), transparent 62%),
+    rgba(255, 200, 0, 0.1);
+  box-shadow: 0 0 34px rgba(255, 200, 0, 0.18);
+  color: var(--gold);
+  font-family: var(--font-number);
+  font-size: 2.6rem;
+  font-weight: 900;
+  line-height: 1;
+  animation: prizeShake 0.42s ease-in-out infinite;
+}
+
+.prize-chest.is-open {
+  border-color: currentColor;
+  border-bottom-color: currentColor;
+  box-shadow: 0 0 46px rgba(255, 200, 0, 0.3);
+  animation: prizePop 0.6s var(--ease-bounce) both;
+}
+
+@keyframes prizeShake {
+  0%, 100% { transform: rotate(-4deg) scale(0.97); }
+  50% { transform: rotate(4deg) scale(1.03); }
+}
+
+@keyframes prizePop {
+  0% { transform: scale(0.5) rotate(-12deg); }
+  60% { transform: scale(1.14) rotate(5deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+
+.prize-kicker {
+  margin: 0;
+  color: var(--gold);
+  font-size: 0.56rem;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+}
+
+.prize-title {
+  margin: 2px 0 0;
+  color: var(--text-strong);
+  font-size: 1.22rem;
+  font-weight: 900;
+}
+
+.prize-details {
+  margin: 14px 0 10px;
+}
+
+.prize-score {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.prize-coins {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: 2px solid var(--gold);
+  border-bottom: 4px solid var(--gold-dark);
+  border-radius: var(--radius-pill);
+  background: var(--gold-soft);
+  color: var(--gold-dark);
+  font-size: 0.92rem;
+  font-weight: 900;
+}
+
+.prize-badge,
+.prize-near-miss {
+  margin: 10px 0 0;
+  font-size: 0.68rem;
+  font-weight: 800;
+  line-height: 1.6;
+}
+
+.prize-badge { color: var(--green); }
+.prize-near-miss { color: var(--orange-dark); }
+
+.prize-note {
+  margin: 8px 0 14px;
+  color: var(--muted);
+  font-size: 0.65rem;
+  font-weight: 600;
+  line-height: 1.7;
+}
+
+.prize-actions .btn { width: 100%; }
+
+@media (prefers-reduced-motion: reduce) {
+  .prize-chest,
+  .prize-chest.is-open { animation: none; }
+}
+
+.badge-shelf {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.badge-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 34px;
+  padding: 5px 11px;
+  border: 2px solid var(--gold-pale);
+  border-radius: var(--radius-pill);
+  background: var(--gold-soft);
+  color: var(--gold-dark);
+  font-size: 0.64rem;
+  font-weight: 800;
+}
+
+.badge-chip.is-locked {
+  border-color: var(--border);
+  background: var(--surface-soft);
+  color: var(--muted-2);
+  opacity: 0.75;
+}
+
 .hearts-panel {
   overflow: hidden;
   border-color: rgba(248, 113, 113, 0.3);
@@ -4660,6 +4819,12 @@ body::before {
       </div>
 
       <div class="section-row">
+        <span class="section-label">خزانة الجوائز</span>
+        <span class="section-hint" id="badge-count">0 / 5</span>
+      </div>
+      <div class="badge-shelf" id="badge-shelf" aria-label="الجوائز التي حصلت عليها"></div>
+
+      <div class="section-row">
         <span class="section-label">تدريب حر</span>
         <span class="section-hint">20 سؤالاً · لا يستهلك تقدّم الرحلة</span>
       </div>
@@ -4972,6 +5137,35 @@ body::before {
     </div>
   </div>
 
+  <!-- نافذة صندوق الجائزة -->
+  <div class="modal prize-modal" id="prize-modal" hidden>
+    <div class="modal-backdrop" id="prize-backdrop" aria-hidden="true"></div>
+    <div class="modal-panel prize-panel" role="dialog" aria-modal="true"
+      aria-labelledby="prize-title" aria-describedby="prize-note" tabindex="-1">
+      <button class="modal-close prize-close" id="prize-close" type="button"
+        aria-label="إغلاق نافذة الجائزة">✕</button>
+      <div class="prize-visual">
+        <div class="prize-chest" id="prize-chest" aria-hidden="true">?</div>
+        <p class="prize-kicker" id="prize-kicker">صندوق الجائزة</p>
+        <h2 class="prize-title" id="prize-title">جاري فتح الصندوق...</h2>
+      </div>
+      <div class="prize-details" id="prize-details" hidden>
+        <p class="prize-score" id="prize-score"></p>
+        <div class="prize-coins">
+          <span aria-hidden="true">🪙</span>
+          <bdi id="prize-coins">+0</bdi>
+          <span>عملة</span>
+        </div>
+        <p class="prize-badge" id="prize-badge" hidden></p>
+        <p class="prize-near-miss" id="prize-near-miss" hidden></p>
+      </div>
+      <p class="prize-note" id="prize-note">لحظة الحسم — انتظر ظهور الجائزة.</p>
+      <div class="prize-actions">
+        <button class="btn btn-primary" id="prize-collect" type="button" disabled>احسم الجائزة</button>
+      </div>
+    </div>
+  </div>
+
   <!-- نافذة نفاد القلوب -->
   <div class="modal hearts-modal" id="hearts-modal" hidden>
     <div class="modal-backdrop" id="hearts-backdrop" aria-hidden="true"></div>
@@ -5025,6 +5219,23 @@ body::before {
     const DAILY_STREAK_KEY = 'dailyStreak_v1';
     const MAX_COMBO_MULTIPLIER = 4;
     const COMBO_COIN_CAP = 60;
+    const PRIZE_REVEAL_MS = 1500;
+
+    // صناديق الجوائز: الترتيب من الأسهل للأصعب، والحدود نسبة من الدرجة الكاملة.
+    const PRIZE_TIERS = [
+      { id: 'bronze', name: 'برونزي', icon: '🥉', minRatio: 0, coins: 10, color: '#d98a5b' },
+      { id: 'silver', name: 'فضي', icon: '🥈', minRatio: 0.6, coins: 25, color: '#cbd5e1' },
+      { id: 'gold', name: 'ذهبي', icon: '🥇', minRatio: 0.8, coins: 50, color: '#ffc800' },
+      { id: 'diamond', name: 'ألماسي', icon: '💎', minRatio: 1, coins: 100, color: '#67e8f9' }
+    ];
+    const PRIZE_BADGES = {
+      bronze: { name: 'صندوق برونزي', icon: '🥉' },
+      silver: { name: 'صندوق فضي', icon: '🥈' },
+      gold: { name: 'صندوق ذهبي', icon: '🥇' },
+      diamond: { name: 'صندوق ألماسي', icon: '💎' },
+      dailyChampion: { name: 'بطل تحدي اليوم', icon: '🏅' }
+    };
+
     const MAX_TOTAL_STARS = CAMPAIGN_STAGES * 3;
     const GAME_STATE_KEY = 'gameState_v2';
     const PREVIOUS_STATE_KEY = 'gameState_v1';
@@ -5443,6 +5654,25 @@ body::before {
       note: document.getElementById('reward-note')
     };
 
+    const prizeElements = {
+      modal: document.getElementById('prize-modal'),
+      backdrop: document.getElementById('prize-backdrop'),
+      close: document.getElementById('prize-close'),
+      collect: document.getElementById('prize-collect'),
+      chest: document.getElementById('prize-chest'),
+      kicker: document.getElementById('prize-kicker'),
+      title: document.getElementById('prize-title'),
+      details: document.getElementById('prize-details'),
+      score: document.getElementById('prize-score'),
+      coins: document.getElementById('prize-coins'),
+      badge: document.getElementById('prize-badge'),
+      nearMiss: document.getElementById('prize-near-miss'),
+      note: document.getElementById('prize-note')
+    };
+    let prizeRevealTimeoutId = null;
+    let prizeRevealToken = 0;
+    let lastPrizeTrigger = null;
+
     const heartsElements = {
       modal: document.getElementById('hearts-modal'),
       backdrop: document.getElementById('hearts-backdrop'),
@@ -5589,6 +5819,7 @@ body::before {
         totalStars: 0,
         lives: MAX_LIVES,
         lastLifeLostTime: 0,
+        badges: [],
         levels
       };
     }
@@ -5628,6 +5859,9 @@ body::before {
         ? Math.min(MAX_LIVES, Math.max(0, parsedLives))
         : MAX_LIVES;
       fresh.lastLifeLostTime = Math.max(0, Number(source.lastLifeLostTime) || 0);
+      fresh.badges = Array.isArray(source.badges)
+        ? [...new Set(source.badges.filter((id) => Object.hasOwn(PRIZE_BADGES, id)))]
+        : [];
 
       let highestCompleted = 0;
       let highestUnlocked = 1;
@@ -6045,6 +6279,53 @@ body::before {
       if (englishEl) englishEl.textContent = englishBest === null ? '—' : `${englishBest}/20`;
       if (dailyEl) dailyEl.textContent = dailyBest === null ? '—' : `${dailyBest}/${DAILY_QUESTION_COUNT}`;
       renderDailyStreak();
+      renderBadgeShelf();
+    }
+
+    /* =========================
+       صناديق الجوائز ومجموعة الشارات
+       ========================= */
+    function getPrizeTier(score, total) {
+      const ratio = total > 0 ? score / total : 0;
+      let index = 0;
+      for (let i = 0; i < PRIZE_TIERS.length; i += 1) {
+        if (ratio >= PRIZE_TIERS[i].minRatio) index = i;
+      }
+      return { ...PRIZE_TIERS[index], rank: index };
+    }
+
+    function getPrizeNearMiss(score, total, rank) {
+      const next = PRIZE_TIERS[rank + 1];
+      if (!next) return '';
+      const needed = Math.ceil(next.minRatio * total);
+      if (needed - score !== 1) return '';
+      return `إجابة واحدة فقط كانت تفصلك عن الصندوق ${next.name}!`;
+    }
+
+    function renderBadgeShelf() {
+      const shelf = document.getElementById('badge-shelf');
+      const countEl = document.getElementById('badge-count');
+      if (!shelf) return;
+      const owned = Array.isArray(gameState.badges) ? gameState.badges : [];
+      if (countEl) countEl.textContent = `${owned.length} / ${Object.keys(PRIZE_BADGES).length}`;
+      shelf.innerHTML = Object.entries(PRIZE_BADGES).map(([id, badge]) => {
+        const unlocked = owned.includes(id);
+        return `<span class="badge-chip${unlocked ? '' : ' is-locked'}"
+          title="${unlocked ? badge.name : 'لم تُفتح بعد'}">
+          <span aria-hidden="true">${unlocked ? badge.icon : '🔒'}</span>
+          <span>${unlocked ? badge.name : 'جائزة مقفلة'}</span>
+        </span>`;
+      }).join('');
+    }
+
+    function awardBadge(id) {
+      if (!Object.hasOwn(PRIZE_BADGES, id) || !Array.isArray(gameState.badges)) return false;
+      if (gameState.badges.includes(id)) return false;
+      gameState.badges.push(id);
+      saveGameState();
+      renderBadgeShelf();
+      renderGameHud();
+      return true;
     }
 
     /* =========================
@@ -6336,6 +6617,7 @@ body::before {
       clearAdvanceTimeout();
       closeShareModal(false);
       closeRewardModal(false);
+      closePrizeModal(false);
       closeHeartsModal(false);
       document.body.removeAttribute('data-mode');
       refreshLives({ save: true, render: false });
@@ -6765,6 +7047,7 @@ body::before {
       clearAdvanceTimeout();
       closeShareModal(false);
       closeRewardModal(false);
+      closePrizeModal(false);
       closeHeartsModal(false);
 
       state.mode = mode;
@@ -6829,6 +7112,7 @@ body::before {
       clearAdvanceTimeout();
       closeShareModal(false);
       closeRewardModal(false);
+      closePrizeModal(false);
       closeHeartsModal(false);
       state.mode = null;
       state.stage = null;
@@ -7439,6 +7723,24 @@ body::before {
             coinsEarned: campaignResult.coinsEarned
           });
         });
+      } else {
+        // كل اختبار حر ينتهي بصندوق جائزة: عملات فورية وشارة عند أول فتح.
+        const tier = getPrizeTier(score, total);
+        gameState.coins += tier.coins;
+        saveGameState();
+        renderGameHud();
+
+        const newBadges = [];
+        if (awardBadge(tier.id)) newBadges.push(tier.id);
+        if (state.mode === 'daily' && score === total && awardBadge('dailyChampion')) {
+          newBadges.push('dailyChampion');
+        }
+        renderBadgeShelf();
+
+        const nearMiss = getPrizeNearMiss(score, total, tier.rank);
+        window.requestAnimationFrame(() => {
+          showPrizeModal({ tier, score, total, nearMiss, badges: newBadges });
+        });
       }
     }
 
@@ -7452,12 +7754,98 @@ body::before {
     function isAnyModalOpen() {
       return isModalVisible(sharedElements.modal)
         || isModalVisible(rewardElements.modal)
+        || isModalVisible(prizeElements.modal)
         || isModalVisible(heartsElements.modal)
         || isModalVisible(legalElements.modal);
     }
 
     function syncModalOpenState() {
       document.body.classList.toggle('modal-open', isAnyModalOpen());
+    }
+
+    function clearPrizeReveal() {
+      prizeRevealToken += 1;
+      if (prizeRevealTimeoutId !== null) {
+        window.clearTimeout(prizeRevealTimeoutId);
+        prizeRevealTimeoutId = null;
+      }
+    }
+
+    function closePrizeModal(restoreFocus = true) {
+      clearPrizeReveal();
+      if (!isModalVisible(prizeElements.modal)) return;
+      prizeElements.modal.hidden = true;
+      prizeElements.collect.disabled = false;
+      syncModalOpenState();
+      if (restoreFocus && lastPrizeTrigger && typeof lastPrizeTrigger.focus === 'function') {
+        lastPrizeTrigger.focus({ preventScroll: true });
+      }
+      lastPrizeTrigger = null;
+    }
+
+    function showPrizeModal(prize) {
+      if (!prizeElements.modal || !prize) return;
+      clearPrizeReveal();
+      lastPrizeTrigger = document.activeElement;
+      const token = prizeRevealToken;
+
+      prizeElements.chest.textContent = '?';
+      prizeElements.chest.classList.remove('is-open');
+      prizeElements.chest.style.removeProperty('color');
+      prizeElements.chest.style.removeProperty('border-color');
+      prizeElements.chest.style.removeProperty('background');
+      prizeElements.kicker.textContent = 'صندوق الجائزة';
+      prizeElements.title.textContent = 'جاري فتح الصندوق...';
+      prizeElements.details.hidden = true;
+      prizeElements.score.textContent = '';
+      prizeElements.coins.textContent = '';
+      prizeElements.badge.hidden = true;
+      prizeElements.nearMiss.hidden = true;
+      prizeElements.note.textContent = 'لحظة الحسم — انتظر ظهور الجائزة.';
+      prizeElements.collect.disabled = true;
+      prizeElements.modal.hidden = false;
+      syncModalOpenState();
+      playPrizeDrumSound();
+
+      const delay = reducedMotionQuery.matches ? 600 : PRIZE_REVEAL_MS;
+      prizeRevealTimeoutId = window.setTimeout(() => {
+        prizeRevealTimeoutId = null;
+        if (token !== prizeRevealToken || prizeElements.modal.hidden) return;
+        const tier = prize.tier;
+
+        prizeElements.chest.textContent = tier.icon;
+        prizeElements.chest.style.color = tier.color;
+        prizeElements.chest.style.borderColor = tier.color;
+        prizeElements.chest.style.background =
+          `radial-gradient(circle at 50% 20%, ${tier.color}40, transparent 62%), rgba(255, 255, 255, 0.05)`;
+        prizeElements.chest.classList.add('is-open');
+        prizeElements.kicker.textContent = 'صندوق مكشوف';
+        prizeElements.title.textContent = `صندوق ${tier.name}!`;
+        prizeElements.score.textContent = `${prize.score} من ${prize.total} إجابة صحيحة`;
+        prizeElements.coins.textContent = `+${tier.coins}`;
+        prizeElements.note.textContent = 'أُضيفت العملات إلى رصيدك. واصل اللعب لفتح صندوق أعلى.';
+
+        if (prize.badges && prize.badges.length) {
+          const badgeNames = prize.badges.map((id) => PRIZE_BADGES[id].name).join(' + ');
+          prizeElements.badge.textContent = `شارة جديدة: ${badgeNames}`;
+          prizeElements.badge.hidden = false;
+        }
+        if (prize.nearMiss) {
+          prizeElements.nearMiss.textContent = prize.nearMiss;
+          prizeElements.nearMiss.hidden = false;
+        }
+
+        prizeElements.details.hidden = false;
+        prizeElements.collect.disabled = false;
+        playPrizeRevealSound(tier.rank);
+        if (tier.rank >= 2) {
+          spawnCelebration({
+            rain: tier.rank === 3 ? 100 : 45,
+            burst: tier.rank === 3 ? 110 : 60
+          });
+        }
+        prizeElements.collect.focus({ preventScroll: true });
+      }, delay);
     }
 
     function showRewardModal(result) {
@@ -7612,6 +8000,7 @@ body::before {
     function continueAfterReward() {
       const stage = lastRewardStage || state.stage || 1;
       closeRewardModal(false);
+      closePrizeModal(false);
       const nextStage = Math.min(CAMPAIGN_STAGES, stage + 1);
       openMap(nextStage);
     }
@@ -7619,6 +8008,7 @@ body::before {
     function retryAfterReward() {
       const stage = lastRewardStage || state.stage || 1;
       closeRewardModal(false);
+      closePrizeModal(false);
       requestQuizStart('campaign', stage);
     }
 
@@ -8352,6 +8742,30 @@ body::before {
       playTone({ freq: 1174.66, duration: 0.16, type: 'triangle', volume: 0.12, delay: 0.08 });
     }
 
+    function playPrizeDrumSound() {
+      for (let index = 0; index < 5; index += 1) {
+        playTone({
+          freq: 120 - index * 6,
+          endFreq: 78,
+          duration: 0.14,
+          type: 'triangle',
+          volume: 0.075,
+          delay: index * 0.22
+        });
+      }
+    }
+
+    function playPrizeRevealSound(rank) {
+      const notes = rank >= 3
+        ? [523.25, 659.25, 783.99, 1046.5]
+        : rank >= 2
+          ? [523.25, 659.25, 783.99]
+          : [440, 554.37, 659.25];
+      notes.forEach((freq, index) => {
+        playTone({ freq, duration: 0.26, type: 'triangle', volume: 0.11, delay: index * 0.09 });
+      });
+    }
+
     function playCorrectSound() {
       playTone({ freq: 523.25, duration: 0.11, type: 'triangle', volume: 0.14 });
       playTone({ freq: 659.25, duration: 0.12, type: 'triangle', volume: 0.14, delay: 0.075 });
@@ -8600,6 +9014,8 @@ body::before {
           event.preventDefault();
           if (isModalVisible(rewardElements.modal)) {
             closeRewardModal();
+          } else if (isModalVisible(prizeElements.modal)) {
+            closePrizeModal();
           } else if (isModalVisible(heartsElements.modal)) {
             closeHeartsModal();
           } else if (isModalVisible(legalElements.modal)) {
@@ -8746,6 +9162,16 @@ body::before {
         rewardElements.backdrop.addEventListener('click', () => closeRewardModal());
       }
 
+      if (prizeElements.collect) {
+        prizeElements.collect.addEventListener('click', () => closePrizeModal());
+      }
+      if (prizeElements.close) {
+        prizeElements.close.addEventListener('click', () => closePrizeModal());
+      }
+      if (prizeElements.backdrop) {
+        prizeElements.backdrop.addEventListener('click', () => closePrizeModal());
+      }
+
       if (heartsElements.retry) {
         heartsElements.retry.addEventListener('click', retryFromHeartsModal);
       }
@@ -8795,6 +9221,7 @@ body::before {
           }
           renderGameHud();
           renderHomePathEntry();
+          renderBadgeShelf();
           if (!screens.map.hidden) renderMap();
         }
         if (event.key === SOUND_STORAGE_KEY) {
